@@ -10,6 +10,8 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from werkzeug.utils import secure_filename
 
 
+from .form import UploadForm 
+
 ###
 # Routing for your application.
 ###
@@ -99,6 +101,24 @@ def add_header(response):
 def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
+
+
+
+def get_uploaded_images():
+    lst=[]
+    rootdir = os.getcwd()
+    for subdir, dirs, files in os.walk(rootdir + '/uploads'):
+        for file in files:
+                lst.append(file)
+    return lst
+    
+@app.route('/files')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    lst=get_uploaded_images()
+    return render_template('files.html',lst=lst)
+
 
 
 if __name__ == '__main__':
